@@ -237,14 +237,8 @@ void ibmpc_host_isr_clear(void)
 
 #define LO8(w)  (*((uint8_t *)&(w)))
 #define HI8(w)  (*(((uint8_t *)&(w))+1))
-// NOTE: With this ISR data line can be read within 2us after clock falling edge.
-// To read data line early as possible:
-// write naked ISR with asembly code to read the line and call C func to do other job?
-ISR(IBMPC_INT_VECT)
+static void _isr(uint8_t dbit)
 {
-    uint8_t dbit;
-    dbit = IBMPC_DATA_PIN&(1<<IBMPC_DATA_BIT);
-
     // Timeout check
     uint8_t t;
     // use only the least byte of millisecond timer
@@ -409,6 +403,65 @@ CLEAR:
 NEXT:
     return;
 }
+
+#ifndef IBMPC_USE_ISR_NAKED
+// Data line can be read within 2us after clock falling edge.
+ISR(IBMPC_INT_VECT)
+{
+    uint8_t dbit = IBMPC_DATA_PIN;
+    _isr(dbit&(1<<IBMPC_DATA_BIT));
+}
+#else
+// Data line can be read within 1us after clock falling edge.
+// You'll have to check usage of registers in _isr() and tweek assembly lines every build
+ISR(IBMPC_INT_VECT, ISR_NAKED)
+{
+    register uint8_t dbit asm ("r18");
+    asm volatile (
+            "push %0\n\t"
+            "in %0, %1\n\t"
+            : "=r" (dbit) : "M" (_SFR_IO_ADDR(IBMPC_DATA_PIN)));
+
+    // prologue
+    asm volatile (
+            "push __zero_reg__\n\t"
+            "push __tmp_reg__\n\t"
+            "in __tmp_reg__, __SREG__\n\t"
+            "push __tmp_reg__\n\t"
+            "clr __zero_reg__\n\t"
+            //"push r18\n\t"
+            "push r19\n\t"
+            "push r20\n\t"
+            "push r21\n\t"
+            "push r24\n\t"
+            "push r25\n\t"
+            ::);
+
+    _isr(dbit&(1<<IBMPC_DATA_BIT));
+
+
+    // epilogue
+    asm volatile (
+            "pop r25\n\t"
+            "pop r24\n\t"
+            "pop r21\n\t"
+            "pop r20\n\t"
+            "pop r19\n\t"
+            //"pop r18\n\t"
+            "pop __tmp_reg__\n\t"
+            "out __SREG__, __tmp_reg__\n\t"
+            "pop __tmp_reg__\n\t"
+            "pop __zero_reg__\n\t"
+            ::);
+
+    asm volatile (
+            "pop %0\n\t"
+            "reti\n\t"
+            :"=r" (dbit) :);
+}
+#endif
+
+
 
 /* send LED state to keyboard */
 void ibmpc_host_set_led(uint8_t led)

@@ -101,4 +101,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #error "No pin configuration in config.h"
 #endif
 
+
+// Use tweaked ISR to read XT protocol start bit faster
+#define IBMPC_USE_ISR_NAKED
+
 #endif
