@@ -75,6 +75,8 @@ static uint8_t timer_start = 0;
 
 void ibmpc_host_init(void)
 {
+DDRB |= 0x0F;
+PORTB |= 0x0F;
     // initialize reset pin to HiZ
     IBMPC_RST_HIZ();
     inhibit();
@@ -111,6 +113,8 @@ int16_t ibmpc_host_send(uint8_t data)
     data_lo();
     wait_us(100);
     clock_hi();     // [5]p.54 [clock low]>100us [5]p.50
+    //cli();
+//PINB |= (1<<1);
     WAIT(clock_lo, 10000, 1);   // [5]p.53, -10ms [5]p.50
 
     /* Data bit[2-9] */
@@ -151,6 +155,8 @@ int16_t ibmpc_host_send(uint8_t data)
 
     idle();
     IBMPC_INT_ON();
+    //sei();
+//PINB |= (1<<1);
     return ibmpc_host_recv_response();
 ERROR:
     ibmpc_error |= IBMPC_ERR_SEND;
@@ -409,7 +415,9 @@ NEXT:
 ISR(IBMPC_INT_VECT)
 {
     uint8_t dbit = IBMPC_DATA_PIN;
+PINB |= (1<<0);
     _isr(dbit&(1<<IBMPC_DATA_BIT));
+PINB |= (1<<0);
 }
 #else
 // Data line can be read within 1us after clock falling edge.
@@ -421,6 +429,7 @@ ISR(IBMPC_INT_VECT, ISR_NAKED)
             "push %0\n\t"
             "in %0, %1\n\t"
             : "=r" (dbit) : "M" (_SFR_IO_ADDR(IBMPC_DATA_PIN)));
+PINB |= (1<<0);
 
     // prologue
     asm volatile (
@@ -454,6 +463,7 @@ ISR(IBMPC_INT_VECT, ISR_NAKED)
             "pop __zero_reg__\n\t"
             ::);
 
+PINB |= (1<<0);
     asm volatile (
             "pop %0\n\t"
             "reti\n\t"
