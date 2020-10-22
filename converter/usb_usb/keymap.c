@@ -44,9 +44,9 @@ const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |  `|   |F1 |F2 |F3 |F4 | |F5 |F6 |F7 |F8 | |F9 |F10|F11|F12| |PrS|ScL|Pau| |VDn|VUp|Mut|Pwr| | Help  |
      * `---'   `---------------' `---------------' `---------------' `-----------' `---------------' `-------'
      * ,-----------------------------------------------------------. ,-----------. ,---------------. ,-------.
-     * |  `    |  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|JPY|Bsp| |Ins|Hom|PgU| |NmL|  /|  *|  -| |Stp|Agn|
+     * |  `    |  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|JPY|Bsp| |PgU|Hom|PgU| |NmL|  /|  *|  -| |Stp|Agn|
      * |-----------------------------------------------------------| |-----------| |---------------| |-------|
-     * |Tab    |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  | |Del|End|PgD| |  7|  8|  9|  +| |Mnu|Und|
+     * |Tab    |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  | |PgD|End|PgD| |  7|  8|  9|  +| |Mnu|Und|
      * |-----------------------------------------------------------| `-----------' |---------------| |-------|
      * |Ctl/Esc|  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  :|  #|Retn|               |  4|  5|  6|KP,| |Sel|Cpy|
      * |-----------------------------------------------------------|     ,---.     |---------------| |-------|
@@ -56,21 +56,21 @@ const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * `-----------------------------------------------------------' `-----------' `---------------' `-------'
      */
     [0] = KEYMAP_ALL(
-        F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
-        GRV, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, PSCR, SLCK, PAUS, VOLD, VOLU, MUTE, PWR, HELP,
-        GRV, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS, EQL, JYEN, BSPC, INS, HOME, PGUP, NLCK, PSLS, PAST, PMNS, STOP, AGIN,
-        TAB, Q, W, E, R, T, Y, U, I, O, P, LBRC, RBRC, BSLS, DEL, END, PGDN, P7, P8, P9, PPLS, MENU, UNDO,
-        FN1, A, S, D, F, G, H, J, K, L, SCLN, QUOT, NUHS, ENT, P4, P5, P6, PCMM, SLCT, COPY,
-        LSFT, NUBS, Z, X, C, V, B, N, M, COMM, DOT, SLSH, RO, RSFT, UP, P1, P2, P3, PEQL, EXEC, PSTE,
-        LCTL, LGUI, LALT, MHEN, HANJ, FN0, HAEN, HENK, KANA, RALT, RGUI, APP, RCTL, LEFT, DOWN, RGHT, P0, PDOT, PENT, FIND, CUT),
+        F13,  F14,  F15,  F16,  F17,  F18, F19,  F20,  F21,  F22,  F23,  F24,
+        GRV,  F1,   F2,   F3,   F4,   F5,  F6,   F7,   F8,   F9,   F10,  F11,  F12,  PSCR, SLCK, PAUS, VOLD, VOLU, MUTE, PWR,  HELP,
+        GRV,  1,    2,    3,    4,    5,   6,    7,    8,    9,    0,    MINS, EQL,  JYEN, BSPC, PGUP, HOME, PGUP, NLCK, PSLS, PAST, PMNS, STOP, AGIN,
+        TAB,  Q,    W,    E,    R,    T,   Y,    U,    I,    O,    P,    LBRC, RBRC, BSLS, PGDN, END,  PGDN, P7,   P8,   P9,   PPLS, MENU, UNDO,
+        FN1,  A,    S,    D,    F,    G,   H,    J,    K,    L,    SCLN, QUOT, NUHS, ENT,  P4,   P5,   P6,   PCMM, SLCT, COPY,
+        LSFT, NUBS, Z,    X,    C,    V,   B,    N,    M,    COMM, DOT,  SLSH, RO,   RSFT, UP, P1, P2, P3, PEQL, EXEC, PSTE,
+        LCTL, LGUI, LALT, MHEN, HANJ, FN0, HAEN, HENK, KANA, RALT, RGUI, APP,  RCTL, LEFT, DOWN, RGHT, P0, PDOT, PENT, FIND, CUT),
 
     /* 1: SpaceFN
      * ,-----------------------------------------------------------.
      * |`  | F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Delete |
      * |-----------------------------------------------------------|
-     * |Caps |   |   |Esc|   |   |   |Hom|Up |End|Psc|Slk|Pau|Ins  |
+     * |Caps |   |   |Esc|   |   |   |Hom|   |End|Psc|Slk|Pau|Ins  |
      * |-----------------------------------------------------------|
-     * |      |   |   |   |   |   |PgU|Lef|Dow|Rig|   |   |        |
+     * |      |   |   |   |   |PgU|Lef|Dow|Up |Rig|   |   |        |
      * |-----------------------------------------------------------|
      * |        |   |   |   |   |Spc|PgD|`  |~  |   |Men|          |
      * |-----------------------------------------------------------|
@@ -79,11 +79,11 @@ const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     [1] = KEYMAP_ALL(
         TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
-        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
-        GRV, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, TRNS, DEL, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
-        CAPS, TRNS, TRNS, ESC, TRNS, TRNS, TRNS, HOME, UP, END, PSCR, SLCK, PAUS, INS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
-        TRNS, TRNS, TRNS, TRNS, TRNS, PGUP, LEFT, DOWN, UP, RGHT, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
-        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, SPC, PGDN, GRV, FN1, TRNS, APP, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        ESC,  TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, F1,   F2,   F3,   F4,   F5,   F6,   F7,   F8,   F9,   F10,  F11,  F12,  TRNS, DEL,  INS,  TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, ESC,  TRNS, TRNS, TRNS, HOME, TRNS, END,  PSCR, SLCK, PAUS, INS,  DEL,  TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, PGUP, LEFT, DOWN, UP,   RGHT, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, SPC,  PGDN, GRV,  FN1,  TRNS, APP,  TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
         TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS),
 };
 
