@@ -16,8 +16,83 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "keymap_common.h"
+#include "action_layer.h"
+#include "timer.h"
+#include "led.h"
 
+void hook_layer_change(uint32_t layer_state)
+{
+    if (layer_state && 1) // layer_1 is ON
+    {
+        led_set(host_keyboard_leds() ^ (1 << USB_LED_CAPS_LOCK));
+    }
+    else
+    {
+        led_set(host_keyboard_leds());
+    }
+}
 
+/*
+ * SpaceFN layout
+ * http://geekhack.org/index.php?topic=51069.0
+ */
+const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+    /* 0: plain Qwerty
+     *         ,---------------. ,---------------. ,---------------.
+     *         |F13|F14|F15|F16| |F17|F18|F19|F20| |F21|F22|F23|F24|
+     * ,---.   |---------------| |---------------| |---------------| ,-----------. ,---------------. ,-------.
+     * |  `|   |F1 |F2 |F3 |F4 | |F5 |F6 |F7 |F8 | |F9 |F10|F11|F12| |PrS|ScL|Pau| |VDn|VUp|Mut|Pwr| | Help  |
+     * `---'   `---------------' `---------------' `---------------' `-----------' `---------------' `-------'
+     * ,-----------------------------------------------------------. ,-----------. ,---------------. ,-------.
+     * |  `    |  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|JPY|Bsp| |Ins|Hom|PgU| |NmL|  /|  *|  -| |Stp|Agn|
+     * |-----------------------------------------------------------| |-----------| |---------------| |-------|
+     * |Tab    |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  | |Del|End|PgD| |  7|  8|  9|  +| |Mnu|Und|
+     * |-----------------------------------------------------------| `-----------' |---------------| |-------|
+     * |Ctl/Esc|  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  :|  #|Retn|               |  4|  5|  6|KP,| |Sel|Cpy|
+     * |-----------------------------------------------------------|     ,---.     |---------------| |-------|
+     * |Shft|  <|  Z|  X|  C|  V|  B|  N|  M|  ,|  ,|  /| RO|Shift |     |Up |     |  1|  2|  3|KP=| |Exe|Pst|
+     * |-----------------------------------------------------------| ,-----------. |---------------| |-------|
+     * |Ctl|Gui|Alt|MHEN|HNJ| Space  |H/E|HENK|KANA|Alt|Gui|App|Ctl| |Lef|Dow|Rig| |  0    |  .|Ent| |Fnd|Cut|
+     * `-----------------------------------------------------------' `-----------' `---------------' `-------'
+     */
+    [0] = KEYMAP_ALL(
+        F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
+        GRV, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, PSCR, SLCK, PAUS, VOLD, VOLU, MUTE, PWR, HELP,
+        GRV, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS, EQL, JYEN, BSPC, INS, HOME, PGUP, NLCK, PSLS, PAST, PMNS, STOP, AGIN,
+        TAB, Q, W, E, R, T, Y, U, I, O, P, LBRC, RBRC, BSLS, DEL, END, PGDN, P7, P8, P9, PPLS, MENU, UNDO,
+        FN1, A, S, D, F, G, H, J, K, L, SCLN, QUOT, NUHS, ENT, P4, P5, P6, PCMM, SLCT, COPY,
+        LSFT, NUBS, Z, X, C, V, B, N, M, COMM, DOT, SLSH, RO, RSFT, UP, P1, P2, P3, PEQL, EXEC, PSTE,
+        LCTL, LGUI, LALT, MHEN, HANJ, FN0, HAEN, HENK, KANA, RALT, RGUI, APP, RCTL, LEFT, DOWN, RGHT, P0, PDOT, PENT, FIND, CUT),
+
+    /* 1: SpaceFN
+     * ,-----------------------------------------------------------.
+     * |`  | F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Delete |
+     * |-----------------------------------------------------------|
+     * |Caps |   |   |Esc|   |   |   |Hom|Up |End|Psc|Slk|Pau|Ins  |
+     * |-----------------------------------------------------------|
+     * |      |   |   |   |   |   |PgU|Lef|Dow|Rig|   |   |        |
+     * |-----------------------------------------------------------|
+     * |        |   |   |   |   |Spc|PgD|`  |~  |   |Men|          |
+     * |-----------------------------------------------------------|
+     * |    |    |    |                        |    |    |    |    |
+     * `-----------------------------------------------------------'
+     */
+    [1] = KEYMAP_ALL(
+        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        GRV, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, TRNS, DEL, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        CAPS, TRNS, TRNS, ESC, TRNS, TRNS, TRNS, HOME, UP, END, PSCR, SLCK, PAUS, INS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, PGUP, LEFT, DOWN, UP, RGHT, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, SPC, PGDN, GRV, FN1, TRNS, APP, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS,
+        TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS, TRNS),
+};
+
+const action_t PROGMEM fn_actions[] = {
+    [0] = ACTION_LAYER_TAP_KEY(1, KC_SPACE),     // FN0
+    [1] = ACTION_MODS_TAP_KEY(MOD_LCTL, KC_ESC), // FN1
+};
+
+#if 0
 const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
     /* 0: plain Qwerty without layer switching
      *         ,---------------. ,---------------. ,---------------.
@@ -26,11 +101,11 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
      * |Esc|   |F1 |F2 |F3 |F4 | |F5 |F6 |F7 |F8 | |F9 |F10|F11|F12| |PrS|ScL|Pau| |VDn|VUp|Mut|Pwr| | Help  |
      * `---'   `---------------' `---------------' `---------------' `-----------' `---------------' `-------'
      * ,-----------------------------------------------------------. ,-----------. ,---------------. ,-------.
-     * |  `|  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|JPY|Bsp| |Ins|Hom|PgU| |NmL|  /|  *|  -| |Stp|Agn|
+     * |  `|  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|JPY|Bsp| |PgU|Hom|PgU| |NmL|  /|  *|  -| |Stp|Agn|
      * |-----------------------------------------------------------| |-----------| |---------------| |-------|
-     * |Tab  |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  | |Del|End|PgD| |  7|  8|  9|  +| |Mnu|Und|
+     * |Tab  |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  | |PgD|End|PgD| |  7|  8|  9|  +| |Mnu|Und|
      * |-----------------------------------------------------------| `-----------' |---------------| |-------|
-     * |CapsL |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  :|  #|Retn|               |  4|  5|  6|KP,| |Sel|Cpy|
+     * |Ctl  |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  :|  #|Retn|               |  4|  5|  6|KP,| |Sel|Cpy|
      * |-----------------------------------------------------------|     ,---.     |---------------| |-------|
      * |Shft|  <|  Z|  X|  C|  V|  B|  N|  M|  ,|  ,|  /| RO|Shift |     |Up |     |  1|  2|  3|KP=| |Exe|Pst|
      * |-----------------------------------------------------------| ,-----------. |---------------| |-------|
@@ -40,17 +115,16 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
     KEYMAP_ALL(
               F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
     ESC,      F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9,  F10, F11, F12,           PSCR,SLCK,PAUS,    VOLD,VOLU,MUTE,PWR,     HELP,
-    GRV, 1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   MINS,EQL, JYEN,BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,    STOP,AGIN,
-    TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,     BSLS,     DEL, END, PGDN,    P7,  P8,  P9,  PPLS,    MENU,UNDO,
-    CAPS,A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,     NUHS,ENT,                         P4,  P5,  P6,  PCMM,    SLCT,COPY,
+    GRV, 1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   MINS,EQL, JYEN,BSPC,     PGUP, HOME,PGUP,    NLCK,PSLS,PAST,PMNS,    STOP,AGIN,
+    TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,     BSLS,     PGDN, END, PGDN,    P7,  P8,  P9,  PPLS,    MENU,UNDO,
+    LCTL, A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,     NUHS,ENT,                         P4,  P5,  P6,  PCMM,    SLCT,COPY,
     LSFT,NUBS,Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,     RO,  RSFT,          UP,           P1,  P2,  P3,  PEQL,    EXEC,PSTE,
     LCTL,LGUI,LALT,MHEN,HANJ,     SPC,      HAEN,HENK,KANA,RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PENT,    FIND,CUT
     ),
 };
 
 const action_t fn_actions[] PROGMEM = {};
-
-
+#endif
 
 /*
  * Keymap samples
@@ -103,7 +177,7 @@ const action_t fn_actions[] PROGMEM = {};
     TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,ENT,      DEL, END, PGDN,    P7,  P8,  P9,  PPLS,
     LCTL,A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,NUHS,                             P4,  P5,  P6,
     LSFT,NUBS,Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,     RSFT,          UP,           P1,  P2,  P3,  PENT,
-    LCTL,LGUI,LALT,          SPC,                     RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT 
+    LCTL,LGUI,LALT,          SPC,                     RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT
     ),
 
     /* JIS layout
@@ -118,7 +192,7 @@ const action_t fn_actions[] PROGMEM = {};
      * |CapsL |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  :|  ]|    |               |  4|  5|  6|   |
      * |-----------------------------------------------------------|     ,---.     |---------------|
      * |Shft    |  Z|  X|  C|  V|  B|  N|  M|  ,|  ,|  /| RO|Shift |     |Up |     |  1|  2|  3|Ent|
-     * |-----------------------------------------------------------| ,-----------. |-----------|   |
+     1* |-----------------------------------------------------------| ,-----------. |-----------|   |
      * |Ctl|Gui|Alt|MHEN|      Space      |HENK|KNA|Alt|Gui|App|Ctl| |Lef|Dow|Rig| |      0|  .|   |
      * `-----------------------------------------------------------' `-----------' `---------------'
      */
@@ -128,7 +202,7 @@ const action_t fn_actions[] PROGMEM = {};
     TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,     ENT,      DEL, END, PGDN,    P7,  P8,  P9,  PPLS,
     LCTL,A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,NUHS,                                  P4,  P5,  P6,
     LSFT,Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,          RO,  RSFT,          UP,           P1,  P2,  P3,  PENT,
-    LCTL,LGUI,LALT,MHEN,     SPC,                HENK,KANA,RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT 
+    LCTL,LGUI,LALT,MHEN,     SPC,                HENK,KANA,RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT
     ),
 
     /* Colemak http://colemak.com
